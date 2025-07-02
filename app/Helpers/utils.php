@@ -74,6 +74,8 @@ if (! function_exists('localFileRemover')) {
         if(\File::exists(env('UPLOAD_FILE_PATH', 'uploads/').$filePath)){
             \File::delete(env('UPLOAD_FILE_PATH', 'uploads/').$filePath);
         }
+
+        return;
     }
 }
 
@@ -81,7 +83,6 @@ if (! function_exists('s3FileRemover')) {
     function s3FileRemover($filePath)
     {
         Storage::disk('s3')->delete($filePath);
-
         return;
     }
 }
