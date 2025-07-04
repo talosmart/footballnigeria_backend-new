@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 // protected users routes
-Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:user', 'verified'])->group(function () {
     // Route::get('/user', [AuthController::class, 'login']);
 });
 
@@ -17,5 +17,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
 // Private admin & users routes
 Route::middleware(['auth:sanctum', 'role:admin, user'])->group(function () {
-    // Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
+    Route::post('/refresh', [AuthController::class, 'refresh']); 
+    Route::post('/logout', [AuthController::class, 'logout']); 
 });
