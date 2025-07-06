@@ -108,9 +108,3 @@ class RunExternalApiJob implements ShouldQueue
         $venuesController->getVenues(request());
     }
 }
-
-// To schedule this job every hour, add the following to app/Console/Kernel.php:
-// protected function schedule(Schedule $schedule)
-// {
-//     $schedule->job(new \App\Jobs\RunExternalApiMethodsJob)->hourly();
-// }
