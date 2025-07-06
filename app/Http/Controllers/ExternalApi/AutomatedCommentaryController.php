@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class AutomatedCommentaryController extends Controller
 {
-    function getAutomatedCommentary(Request $request)
+    public function getAutomatedCommentary(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

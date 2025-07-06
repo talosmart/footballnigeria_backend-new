@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class MatchEventsController extends Controller
 {
-    function getMatchEvents(Request $request)
+    public function getMatchEvents(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

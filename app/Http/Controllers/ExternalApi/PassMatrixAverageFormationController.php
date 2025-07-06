@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class PassMatrixAverageFormationController extends Controller
 {
-    function getPassMatrixAverageFormation(Request $request)
+    public function getPassMatrixAverageFormation(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

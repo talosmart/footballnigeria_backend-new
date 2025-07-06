@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class ContestantParticipationController extends Controller
 {
-    function getContestantParticipation(Request $request)
+    public function getContestantParticipation(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

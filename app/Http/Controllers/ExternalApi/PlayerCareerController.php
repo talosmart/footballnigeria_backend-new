@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class PlayerCareerController extends Controller
 {
-    function getPlayerCareer(Request $request)
+    public function getPlayerCareer(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class TeamsController extends Controller
 {
-    function getTeams(Request $request)
+    public function getTeams(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

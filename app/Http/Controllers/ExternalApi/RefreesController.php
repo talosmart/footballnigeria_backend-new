@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class RefreesController extends Controller
 {
-    function getRefrees(Request $request)
+    public function getRefrees(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

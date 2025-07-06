@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class AreasController extends Controller
 {
-    function getAreas(Request $request)
+    public function getAreas(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

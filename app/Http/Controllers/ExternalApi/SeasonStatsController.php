@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class SeasonStatsController extends Controller
 {
-    function getSeasonStats(Request $request)
+    public function getSeasonStats(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

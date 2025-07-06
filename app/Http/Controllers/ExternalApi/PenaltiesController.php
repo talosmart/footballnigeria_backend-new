@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class PenaltiesController extends Controller
 {
-    function getPenalties(Request $request)
+    public function getPenalties(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

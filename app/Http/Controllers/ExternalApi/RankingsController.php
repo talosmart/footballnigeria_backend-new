@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class RankingsController extends Controller
 {
-    function getRankings(Request $request)
+    public function getRankings(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

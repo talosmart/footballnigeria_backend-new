@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class DetailedMatchStatsController extends Controller
 {
-    function getDetailedMatchStats(Request $request)
+    public function getDetailedMatchStats(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

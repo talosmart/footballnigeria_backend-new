@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class PlayerContractController extends Controller
 {
-    function getPlayerContract(Request $request)
+    public function getPlayerContract(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

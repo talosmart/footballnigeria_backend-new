@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class TransfersController extends Controller
 {
-    function getTransfers(Request $request)
+    public function getTransfers(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

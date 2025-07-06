@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class PossessionsController extends Controller
 {
-    function getPossessions(Request $request)
+    public function getPossessions(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

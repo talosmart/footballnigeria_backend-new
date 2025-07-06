@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class TrophiesController extends Controller
 {
-    function getTrophies(Request $request)
+    public function getTrophies(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

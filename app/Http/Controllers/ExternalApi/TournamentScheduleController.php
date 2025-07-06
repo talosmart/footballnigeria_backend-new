@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class TournamentScheduleController extends Controller
 {
-    function getTournamentSchedule(Request $request)
+    public function getTournamentSchedule(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

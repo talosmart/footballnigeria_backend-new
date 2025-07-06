@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class StandingsController extends Controller
 {
-    function getStandings(Request $request)
+    public function getStandings(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

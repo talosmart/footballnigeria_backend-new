@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class FixturesResultsController extends Controller
 {
-    function getFixturesResults(Request $request)
+    public function getFixturesResults(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data

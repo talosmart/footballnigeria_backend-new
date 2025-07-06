@@ -8,7 +8,7 @@ use App\Http\Controllers\ExternalApi\base;
 
 class SquadsController extends Controller
 {
-    function getSquads(Request $request)
+    public function getSquads(Request $request)
     {
         $base = new base();
         $url = 'enter url here'; // Replace with the actual URL to fetch areas data
