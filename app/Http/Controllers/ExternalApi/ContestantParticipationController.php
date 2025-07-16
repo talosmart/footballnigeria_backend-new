@@ -11,7 +11,7 @@ class ContestantParticipationController extends Controller
     public function getContestantParticipation(Request $request)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/contestantparticipation/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&ctst={contestantUUID}';
         
         return $base->fetchData($url);
     }

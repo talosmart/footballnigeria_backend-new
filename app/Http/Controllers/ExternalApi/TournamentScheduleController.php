@@ -11,7 +11,7 @@ class TournamentScheduleController extends Controller
     public function getTournamentSchedule(Request $request)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/tournamentschedule/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&tmcl={tournamentCalendarUuid}'; 
         
         return $base->fetchData($url);
     }

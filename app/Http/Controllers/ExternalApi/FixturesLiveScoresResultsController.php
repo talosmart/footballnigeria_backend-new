@@ -11,7 +11,7 @@ class FixturesLiveScoresResultsController extends Controller
     public function getFixturesLiveScoresResults(Request $request)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/match/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&live=yes&tmcl={tournamentCalendarUuid}';
         
         return $base->fetchData($url);
     }

@@ -16,8 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'cors' => \Illuminate\Http\Middleware\HandleCors::class,
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'auth' => \App\Http\Middleware\Authenticate::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->renderable(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            return response()->json([
+                'message' => 'You are not authorized, please login.'
+            ], 401);
+        });
     })->create();
