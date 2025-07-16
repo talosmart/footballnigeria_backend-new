@@ -8,10 +8,10 @@ use App\Http\Controllers\ExternalApi\base;
 
 class MatchPreviewController extends Controller
 {
-    public function getMatchPreview(Request $request)
+    public function getMatchPreview(Request $request, $fixtureUuid)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/matchpreview/1xlnohn926e1k1wfb2xxlwdjjh/'.$fixtureUuid.'?_rt=b&_fmt=json ';
         
         return $base->fetchData($url);
     }

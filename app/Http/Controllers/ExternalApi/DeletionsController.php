@@ -11,7 +11,7 @@ class DeletionsController extends Controller
     public function getDeletions(Request $request)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/deletions/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&type=person '; 
         
         return $base->fetchData($url);
     }

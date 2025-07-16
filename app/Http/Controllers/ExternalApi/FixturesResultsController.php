@@ -8,10 +8,10 @@ use App\Http\Controllers\ExternalApi\base;
 
 class FixturesResultsController extends Controller
 {
-    public function getFixturesResults(Request $request)
+    public function getFixturesResults(Request $request, $tournamentCalendarUuid)
     {
         $base = new base();
-        $url = 'http://api.performfeeds.com/soccerdata/match/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&tmcl={tournamentCalendarUuid}'; 
+        $url = 'http://api.performfeeds.com/soccerdata/match/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&tmcl='.$tournamentCalendarUuid; 
         
         return $base->fetchData($url);
     }

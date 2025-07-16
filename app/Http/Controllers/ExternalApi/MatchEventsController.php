@@ -8,10 +8,10 @@ use App\Http\Controllers\ExternalApi\base;
 
 class MatchEventsController extends Controller
 {
-    public function getMatchEvents(Request $request)
+    public function getMatchEvents(Request $request, $fixtureUuid)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/matchevent/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&fx='.$fixtureUuid; 
         
         return $base->fetchData($url);
     }

@@ -8,10 +8,10 @@ use App\Http\Controllers\ExternalApi\base;
 
 class TrophiesController extends Controller
 {
-    public function getTrophies(Request $request)
+    public function getTrophies(Request $request, $contestantUUID)
     {
         $base = new base();
-        $url = 'enter url here'; // Replace with the actual URL to fetch areas data
+        $url = 'http://api.performfeeds.com/soccerdata/trophies/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&ctst='.$contestantUUID;
         
         return $base->fetchData($url);
     }

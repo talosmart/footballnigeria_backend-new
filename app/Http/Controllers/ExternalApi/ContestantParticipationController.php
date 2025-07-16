@@ -8,10 +8,10 @@ use App\Http\Controllers\ExternalApi\base;
 
 class ContestantParticipationController extends Controller
 {
-    public function getContestantParticipation(Request $request)
+    public function getContestantParticipation(Request $request, $contestantUUID)
     {
         $base = new base();
-        $url = 'http://api.performfeeds.com/soccerdata/contestantparticipation/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&ctst={contestantUUID}';
+        $url = 'http://api.performfeeds.com/soccerdata/contestantparticipation/1xlnohn926e1k1wfb2xxlwdjjh?_rt=b&_fmt=json&ctst='.$contestantUUID;
         
         return $base->fetchData($url);
     }
