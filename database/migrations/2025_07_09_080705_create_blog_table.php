@@ -8,46 +8,44 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('blog_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique();
+            $table->longText('description')->nullable();
+            $table->boolean('is_visible')->default(false);
             $table->timestamps();
         });
 
-        Schema::create('blogs', function (Blueprint $table) {
+        Schema::create('blog_authors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade')->index();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->index()->name('blogs_user_id_foreign');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('photo')->nullable();
+            $table->longText('bio')->nullable();
+            $table->string('github_handle')->nullable();
+            $table->string('twitter_handle')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('blog_posts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('blog_author_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('blog_category_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
-            $table->string('content');
-            $table->string('media');
-            $table->string('slug');
-            $table->timestamps();
-        });
-
-        Schema::create('likes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('blog_id')->constrained('blogs')->onDelete('cascade')->index()->name('likes_blog_id_foreign');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->index()->name('likes_user_id_foreign');
-            $table->boolean('like')->default(false);
-            $table->timestamps();
-        });
-
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('blog_id')->constrained('blogs')->onDelete('cascade')->index()->name('comments_blog_id_foreign');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->index()->name('comments_user_id_foreign');
-            $table->boolean('is_approved')->default(false);
-            $table->string('comment');
+            $table->string('slug')->unique();
+            $table->text('excerpt')->nullable();
+            $table->string('banner')->nullable();
+            $table->longText('content');
+            $table->date('published_at')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('comments');
-        Schema::dropIfExists('likes');
-        Schema::dropIfExists('blogs');
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('blog_posts');
+        Schema::dropIfExists('blog_categories');
+        Schema::dropIfExists('blog_authors');
     }
 };
