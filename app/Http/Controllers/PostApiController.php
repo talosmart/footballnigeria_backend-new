@@ -77,7 +77,6 @@ class PostApiController extends Controller
         }
     }
 
-
     public function singlePost(Request $request){
         try{
             $validator = \Validator::make($request->all(), [
