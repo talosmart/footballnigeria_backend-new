@@ -14,7 +14,7 @@ class UserController extends Controller
     public function user(Request $request)
     {
         try{
-            $user = User::Where([Auth()->user()->id, $id])->get();
+            $user = $request->user();
 
             return response()->json([
                 'status' => "success",
@@ -31,7 +31,7 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         try{
-            $user = User::FindOrFail(Auth()->user()->id);
+            $user = $request->user();
 
             if(!$user){
                 return response()->json([
@@ -73,7 +73,7 @@ class UserController extends Controller
                 'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
 
-            $user = User::FindOrFail(Auth()->user()->id);
+            $user = $request->user();
 
             if(!$user){
                 return response()->json([
@@ -107,7 +107,7 @@ class UserController extends Controller
     public function deleteAccount(Request $request)
     {
         try{
-            $user = User::FindOrFail(Auth()->user()->id);;
+            $user = $request->user();
 
             if(!$user){
                 return response()->json([
