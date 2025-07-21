@@ -16,8 +16,8 @@ Route::group(['prefix' => 'password'], function(){
 Route::get('/categories',[PostApiController::class,'category']);
 
 Route::group(['prefix' => 'blog'], function(){
-    Route::get('list',[PostApiController::class,'listPost']);
-    Route::get('single',[PostApiController::class,'singlePost']);
+    Route::get('list', [PostApiController::class,'listPost']);
+    Route::get('single/{id}', [PostApiController::class,'singlePost']);
 });
 
 require __DIR__.'/thirdPartyApi.php';

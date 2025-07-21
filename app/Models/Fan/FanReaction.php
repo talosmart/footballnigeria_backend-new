@@ -3,6 +3,7 @@
 namespace App\Models\Fan;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class FanReaction extends Model
 {
@@ -19,6 +20,11 @@ class FanReaction extends Model
         'target_id', 
         'reaction_chain'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id','id');
+    }
 
     public function reactable(): MorphTo
     {

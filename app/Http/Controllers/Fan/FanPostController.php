@@ -4,14 +4,10 @@ namespace App\Http\Controllers\Fan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\FanPost;
-use App\Models\FanMedia;
-use App\Events\NewPostCreated;
+use App\Models\Fan\FanPost;
+use App\Models\Fan\FanMedia;
 use Illuminate\Support\Facades\Storage;
-use FFMpeg\FFMpeg;
-use FFMpeg\Coordinate\TimeCode;
-use App\Models\FanTopic;
-// use Illuminate\Http\Request;
+use App\Models\Fan\FanTopic;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,7 +18,6 @@ class FanPostController extends Controller
         try{
             $request->validate([
                 'topic_id' => 'nullable',
-                'title' => 'required|string|max:20000',
                 'content' => 'required|string|max:20000',
                 'media' => 'nullable|array',
                 'media.*' => 'file',
@@ -30,8 +25,6 @@ class FanPostController extends Controller
             $s=[
                 'user_id' => auth()->id(),
                 'content' => $request->content,
-                // 'topic_id'
-                'title'=>$request->title
             ];
             if(request()->has('topic_id')){
                 $s['topic_id']=request()->topic_id;
@@ -43,25 +36,22 @@ class FanPostController extends Controller
             // Handle media uploads
             if ($request->hasFile('media')) {
                 foreach ($request->file('media') as $index => $file) {
-                    $path = Storage::putFile("fan_posts/{$post->id}/media", $file);
-                    $mediaType = $this->getMediaType($file);
+                    $upload = localUploadFile($file);
 
                     $thumbnailUrl = null;
-                    if ($mediaType === 'video') {
-                        $thumbnailUrl = $this->generateVideoThumbnail($file, $post->id);
+                    if ($upload['mimeType'] === 'video') {
+                        $thumbnailUrl = generateVideoThumbnail($file, $post->id);
                     }
 
                     FanMedia::create([
                         'post_id' => $post->id,
-                        'type' => $mediaType,
-                        'url' => $path,
+                        'type' => $upload['mimeType'] === 'video' ? 'video' : 'image',
+                        'url' => $upload['filePath'],
                         'thumbnail_url' => $thumbnailUrl,
                         'order' => $index,
                     ]);
                 }
             }
-
-            // event(new NewPostCreated($post));
 
             return response()->json([
                     'status' => 'success',
@@ -75,17 +65,16 @@ class FanPostController extends Controller
         }    
     }
 
-
-
     public function getPost($post_id)
     {
+        // todo add comment replies
         try {
             $post = FanPost::with([
                 'user', 
                 'media',
                 'topic',
                 'comments.user',
-                'comments.replies.user',
+                // 'comments.replies.user',
                 'reactions.user'
             ])->findOrFail($post_id);
 
@@ -104,8 +93,6 @@ class FanPostController extends Controller
     public function updatePost(Request $request, $id)
     {
         $request->validate([
-
-            'title' => 'sometimes|required|string|max:20000',
             'content' => 'sometimes|required|string|max:20000',
             'media' => 'sometimes|nullable|array',
             'media.*' => 'file',
@@ -124,7 +111,6 @@ class FanPostController extends Controller
 
             $post->update([
                 'content' => $request->input('content', $post->content),
-                'title'=>$request->input('title',$post->title)
             ]);
 
             // Handle media updates if provided
@@ -133,18 +119,17 @@ class FanPostController extends Controller
                 $post->media()->delete();
 
                 foreach ($request->file('media') as $index => $file) {
-                    $path = Storage::putFile("fan_posts/{$post->id}/media", $file);
-                    $mediaType = $this->getMediaType($file);
+                    $upload = localUploadFile($file);
 
                     $thumbnailUrl = null;
-                    if ($mediaType === 'video') {
-                        $thumbnailUrl = $this->generateVideoThumbnail($file, $post->id);
+                    if ($upload['mimetype'] === 'video') {
+                        $thumbnailUrl = generateVideoThumbnail($file, $post->id);
                     }
 
                     FanMedia::create([
                         'post_id' => $post->id,
-                        'type' => $mediaType,
-                        'url' => $path,
+                        'type' => $upload['mimetype'] === 'video' ? 'video' : 'image',
+                        'url' => $upload['filePath'],
                         'thumbnail_url' => $thumbnailUrl,
                         'order' => $index,
                     ]);
@@ -482,61 +467,6 @@ class FanPostController extends Controller
                 'status' => 'error',
                 'message' => 'Request failed: ' . $e->getMessage(),
             ], 500);
-        }
-    }
-
-    private function getMediaType($file): string
-    {
-        return str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-    }
-
-    private function generateVideoThumbnail($videoFile, $postId): ?string
-    {
-        try {
-            // Ensure FFmpeg is installed
-            if (!extension_loaded('ffmpeg')) {
-                throw new \Exception('FFmpeg extension not loaded');
-            }
-
-            // Create storage paths
-            $thumbnailPath = "fan_posts/{$postId}/thumbnails";
-            $thumbnailName = 'thumbnail_' . time() . '.jpg';
-            $fullThumbnailPath = "/var/www/footballnigeria/portal/public/images/post/{$thumbnailPath}";
-
-            // Ensure directory exists
-            if (!file_exists($fullThumbnailPath)) {
-                mkdir($fullThumbnailPath, 0755, true);
-            }
-
-            // Temporary video path
-            $tempVideoPath = $videoFile->getRealPath();
-
-            // Initialize FFmpeg
-            $ffmpeg = FFMpeg::create([
-                'ffmpeg.binaries'  => '/usr/bin/ffmpeg', // Path to ffmpeg binary
-                'ffprobe.binaries' => '/usr/bin/ffprobe', // Path to ffprobe binary
-                'timeout'          => 3600, // Timeout for processes
-                'ffmpeg.threads'   => 12,   // Number of threads
-            ]);
-
-            // Open the video
-            $video = $ffmpeg->open($tempVideoPath);
-
-            // Get video duration to capture thumbnail from 10% of duration
-            $duration = $video->getFFProbe()
-                ->format($tempVideoPath)
-                ->get('duration');
-            $seconds = $duration * 0.1;
-
-            // Capture frame and save thumbnail
-            $video->frame(TimeCode::fromSeconds($seconds))
-                ->save("{$fullThumbnailPath}/{$thumbnailName}");
-
-            // Return the public accessible path
-            return "/images/{$thumbnailPath}/{$thumbnailName}";
-        } catch (\Exception $e) {
-            \Log::error('Thumbnail generation failed: ' . $e->getMessage());
-            return null;
         }
     }
 }

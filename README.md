@@ -12,6 +12,10 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Prerquisite
+- Download and install [FFMpeg](https://ffmpeg.org/download.html) 
+- add ffmpeg binaries to you .env
+
 ## Setup and Deployment
 
 - clone project

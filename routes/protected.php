@@ -49,22 +49,25 @@ Route::group(['prefix' => 'fans'], function () {
     Route::group(['prefix' => 'post'], function () {
         Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {     
             Route::get('/categories', [FanPostController::class, 'postcategories']);
-            Route::post('/create',[FanPostController::class,'createPost']);
+            Route::post('/create', [FanPostController::class,'createPost']);
             Route::post('/update/{id}',[FanPostController::class,'updatePost']);
             Route::get('/list',[FanPostController::class,'listPosts']);
-            Route::get('/delete/{id}',[FanPostController::class,'deletePost']);
+            Route::delete('/delete/{id}',[FanPostController::class,'deletePost']);
             Route::post('/{post_id}/react',[FanReactionController::class,'reactToPost']);
-            Route::get('/{post_id}/get',[FanReactionController::class,'getPost']);
+            Route::get('/{post_id}/get',[FanPostController::class,'getPost']);
             Route::post('/{post_id}/comment',[FanCommentController::class,'addComment']);
             Route::get('/{post_id}/list/comment',[FanCommentController::class,'listComments']);
             Route::post('/{post_id}/update/comment',[FanCommentController::class,'updateComment']);
             Route::get('/{comment_id}/get/comment',[FanCommentController::class,'getComment']);
-            Route::get('/{comment_id}/delete/comment',[FanCommentController::class,'deleteComment']);
+            Route::delete('/{comment_id}/delete/comment',[FanCommentController::class,'deleteComment']);
+            Route::post('/{comment_id}/comment/react',[FanReactionController::class,'reactToComment']);
+        });
+
+        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {     
             Route::post('/{comment_id}/reply',[FanCommentController::class,'addCommentReply']);
             Route::post('/{reply_id}/update/reply',[FanCommentController::class,'updateReply']);
             Route::get('/{reply_id}/get/reply',[FanCommentController::class,'getReply']);
             Route::get('/{reply_id}/delete/reply',[FanCommentController::class,'deleteReply']);
-            Route::post('/{comment_id}/comment/react',[FanReactionController::class,'reactToComment']);
             Route::post('/{reply_id}/reply/react',[FanReactionController::class,'reactToReply']); 
         });
     });

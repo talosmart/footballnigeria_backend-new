@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Fan\FanPost;
 use App\Models\Fan\FanComment;
-// use App\Events\NewCommentAdded;
 use App\Models\Fan\FanReply;
 use App\Models\User;
 
@@ -43,18 +42,19 @@ class FanCommentController extends Controller
 
     public function listComments($post_id, Request $request)
     {
+        // todo work on replies
         try {
             $currentUserId = auth()->id();
             
             $comments = FanComment::with([
                 'user', 
-                'replies.user',
+                // 'replies.user',
                 'reactions' => function($query) use ($currentUserId) {
                     $query->where('user_id', $currentUserId);
                 },
-                'replies.reactions' => function($query) use ($currentUserId) {
-                    $query->where('user_id', $currentUserId);
-                }
+                // 'replies.reactions' => function($query) use ($currentUserId) {
+                    // $query->where('user_id', $currentUserId);
+                // }
             ])
             ->where('post_id', $post_id)
             ->whereNull('parent_id') // Only top-level comments
@@ -102,7 +102,10 @@ class FanCommentController extends Controller
     public function getComment($comment_id)
     {
         try{
-            $comment = FanComment::with(['user', 'replies.user'])
+            $comment = FanComment::with([
+                'user', 
+                // 'replies.user'
+                ])
                         ->findOrFail($comment_id);
 
             return response()->json([
@@ -127,7 +130,7 @@ class FanCommentController extends Controller
 
             $comment->update(['content' => $request->content]);
 
-            return lresponse()->json([
+            return response()->json([
                 'status' => 'success',
                 'comment' => $comment->fresh()->load('user')
             ]);
@@ -147,7 +150,7 @@ class FanCommentController extends Controller
 
                 // return $comment->post;
             // Delete replies first if needed
-            $comment->replies()->delete();
+            // $comment->replies()->delete();
             
             // Update post comment count
             $comment->post->decrement('comment_count', $comment->reply_count + 1);

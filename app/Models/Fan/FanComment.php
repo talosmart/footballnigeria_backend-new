@@ -3,6 +3,7 @@
 namespace App\Models\Fan;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class FanComment extends Model
 {
@@ -20,21 +21,22 @@ class FanComment extends Model
         'is_approved'
     ];
 
-    public function user(): HasOne
+    public function user()
     {
-        return $this->hasOne(FanUser::class,'id','user_id');
+        return $this->belongsTo(User::class,'user_id','id');
     }
 
-    public function post(): HasOne
+    public function post()
     {
-        return $this->hasOne(FanPost::class,'id','post_id');
+        return $this->belongsTo(FanPost::class,'post_id','id');
     }
 
-    public function reactions(): MorphMany
+    public function reactions()
     {
         return $this->morphMany(FanReaction::class, 'reactable');
     }
-    public function replies(): HasMany
+    
+    public function replies()
     {   
         return $this->hasMany(FanReply::class, 'comment_id','id');
     }

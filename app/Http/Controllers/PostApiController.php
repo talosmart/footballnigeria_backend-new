@@ -29,16 +29,6 @@ class PostApiController extends Controller
     public function listPost(Request $request)
     {
         try{
-            $validator = \Validator::make($request->all(), [
-                'paginate' => 'required|integer|min:1|max:100', 
-            ]);
-        
-            if ($validator->fails()) {
-                return laraResponse('Validation error', [
-                    'errors' => $validator->errors(),
-                ])->error();
-            }
-            
             $query = Post::query()->with(['author','seo']);
         
             if ($request->filled('category_id')) {
@@ -77,24 +67,33 @@ class PostApiController extends Controller
         }
     }
 
-    public function singlePost(Request $request){
+    public function singlePost($id){
         try{
-            $validator = \Validator::make($request->all(), [
-                'id' => 'required|integer', // Validate pagination
+            $validator = \Validator::make(['id' => $id], [
+                'id' => 'required|integer',
             ]);
-        
+
             if ($validator->fails()) {
-                return laraResponse('Validation error', [
+                return response()->json([
+                    'status' => 'error',
                     'errors' => $validator->errors(),
-                ])->error();
+                ]);
             }
             
-            $posts = Post::query()->with(['author','seo'])->find($request->id);
+            $check = Post::find($id);
+            if (!$check) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Post not found',
+                ], 404);
+            }
+
+            $posts = Post::query()->with(['author','seo'])->find($id);
             
             return response()->json([
                 'status' => 'error',
                 'data' => new PostResource( $posts), 
-            ])->success();
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',

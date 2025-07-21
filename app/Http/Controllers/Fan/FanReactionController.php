@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Fan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\FanPost;
-use App\Models\FanReaction;
-use App\Events\ReactionUpdated;
-use App\Models\FanComment;
-use App\Models\FanReply;
+use App\Models\Fan\FanPost;
+use App\Models\Fan\FanReaction;
+use App\Models\Fan\FanComment;
+use App\Models\Fan\FanReply;
 use Illuminate\Support\Facades\Validator;
 
 class FanReactionController extends Controller
@@ -26,7 +25,6 @@ class FanReactionController extends Controller
                     'message' => 'Unauthorized to reaction type ',
                     'data'=>$validator->errors()
                 ]);
-                // return laraResponse('error',[])->error();
             }
             if($post==null) {
                 return response()->json([

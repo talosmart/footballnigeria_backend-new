@@ -4,6 +4,7 @@ namespace App\Models\Fan;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 
 class FanPost extends Model
 {
@@ -29,28 +30,29 @@ class FanPost extends Model
         'tags'
     ];
 
-    public function user(): HasOne
+    public function user()
     {
-        return $this->hasOne(FanUser::class,'id','user_id');
+        return $this->belongsTo(User::class,'user_id','id');
     }
 
-    public function media(): HasMany
+    public function media()
     {
         return $this->hasMany(FanMedia::class,'post_id','id')->orderBy('order');
     }
 
-    public function comments(): HasMany
+    public function comments()
     {
-        return $this->hasMany(FanComment::class,'post_id','id');
+        return $this->hasMany(FanComment::class, 'post_id','id');
     }
 
-    public function reactions(): MorphMany
+    public function reactions()
     {
         return $this->morphMany(FanReaction::class, 'reactable');
     }
-    public function topic(): HasOne
+
+    public function topic()
     {
-        return $this->hasOne(FanTopic::class,'id','topic_id');
+        return $this->belongsTo(FanTopic::class,'topic_id','id');
     }
 
     public function category(): HasOne
