@@ -11,17 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('fan_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('icon')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('fan_topics', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('category_id')->constrained('fan_categories');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->timestamps();
+        });
+        
         Schema::create('fan_posts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('fan_users')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->text('content');
             $table->unsignedInteger('like_count')->default(0);
             $table->unsignedInteger('comment_count')->default(0);
-            $table->foreignId('topic_id')->nullable()->after('user_id')->constrained('fan_topics');
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending')->after('content');
-            $table->timestamp('approved_at')->nullable()->after('status');
-            $table->foreignId('approved_by')->nullable()->after('approved_at')->constrained('users');
-            $table->text('rejection_reason')->nullable()->after('approved_by');
+            $table->foreignId('topic_id')->nullable()->constrained('fan_topics');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->timestamp('approved_at')->nullable();
+            $table->foreignId('approved_by')->nullable()->constrained('users');
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -58,21 +74,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('fan_categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->string('icon')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('fan_topics', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('category_id')->constrained('fan_categories');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
-        });
 
         Schema::create('fan_post_approval_logs', function (Blueprint $table) {
             $table->id();

@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
             "email" => "admin@talosmart.com",
             "role" => "admin",
             "password" => "Talosmart@1234",
-            "password_confirmation" => "Talosmart@1234"
         ]);
     }
 }
