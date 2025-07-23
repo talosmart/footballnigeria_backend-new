@@ -11,6 +11,8 @@ class SeoData extends Model
     
     protected $table ='fn_seo_metas';
     protected $fillable = [
+        'model_type',
+        'model_id',
         'meta_title',
         'meta_description',
         'meta_keywords',

@@ -8,6 +8,7 @@ use App\Models\Fan\FanPost;
 use App\Models\Fan\FanMedia;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Fan\FanTopic;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
@@ -241,7 +242,7 @@ class FanPostController extends Controller
     public function postcategories()
     {
         try{
-            $postcategories = \App\Models\Category::all();
+            $postcategories = Category::all();
 
             return response()->json([
                 'success' => true,
@@ -299,7 +300,7 @@ class FanPostController extends Controller
                 'user_id' => auth()->id() ?? null // Include if you have auth
             ]);
 
-            return response()->json('success', [
+            return response()->json([
                 'success' => true,
                 'message' => 'Topic created successfully',
                 'data' => $topic
@@ -311,7 +312,6 @@ class FanPostController extends Controller
             ], 500);
         }
     }
-
 
     public function updateTopic(Request $request, $id)
     {
@@ -369,11 +369,11 @@ class FanPostController extends Controller
                 }
                 return $value;
             });
-            return response()->json('success', [
+            return response()->json([
                 'success' => true,
                 'message' => 'Topic updated successfully',
                 'data' => $transformed
-            ])->success();
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -382,11 +382,12 @@ class FanPostController extends Controller
         }
     }
 
-    public function ListTopic(Request $request)
+    public function ListTopic($status = 'all', $ownership = 'all')
     {
         try {
             // Validate the optional filters
-            $validator = Validator::make($request->all(), [
+            $data = ['status' => $status, 'ownership' => $ownership];
+            $validator = Validator::make($data, [
                 'status' => 'sometimes|in:approved,unapproved,all',
                 'ownership' => 'sometimes|in:mine,all'
             ]);
@@ -399,8 +400,8 @@ class FanPostController extends Controller
                 ]);
             }
 
-            $status = $request->input('status', 'all');
-            $ownership = $request->input('ownership', 'all');
+            $status = $status;
+            $ownership = $ownership;
             $userId = auth()->id();
 
             $query = FanTopic::with(['category', 'user'])

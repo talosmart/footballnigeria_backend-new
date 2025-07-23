@@ -26,8 +26,8 @@ class Category extends Model
         'content'
     ];
 
-    public function posts(): HasMany
+    public function posts()
     {
-        return $this->hasMany(Post::class,'category_id','id');
+        return $this->hasMany(Post::class, 'category_id', 'id');
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Fan\FanPostController;
 use App\Http\Controllers\Fan\FanCommentController;
 use App\Http\Controllers\Fan\FanReactionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostApiController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // Resend verification
@@ -41,13 +42,13 @@ Route::group(['prefix' => 'fans'], function () {
     Route::group(['prefix' => 'topics'], function () {
         Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
             Route::post('/create', [FanPostController::class, 'createTopic']);
-            Route::post('/delete/{id}', [FanPostController::class, 'deleteTopic']);
-            Route::post('/update/{id}', [FanPostController::class, 'updateTopic']);
-            Route::get('/list', [FanPostController::class, 'ListTopic']);
+            Route::delete('/delete/{id}', [FanPostController::class, 'deleteTopic']);
+            Route::put('/update/{id}', [FanPostController::class, 'updateTopic']);
+            Route::get('/list/{status?}/{ownership?}', [FanPostController::class, 'ListTopic']);
         });
     });
     Route::group(['prefix' => 'post'], function () {
-        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {     
+        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {    
             Route::get('/categories', [FanPostController::class, 'postcategories']);
             Route::post('/create', [FanPostController::class,'createPost']);
             Route::post('/update/{id}',[FanPostController::class,'updatePost']);
@@ -71,6 +72,12 @@ Route::group(['prefix' => 'fans'], function () {
             Route::post('/{reply_id}/reply/react',[FanReactionController::class,'reactToReply']); 
         });
     });
+});
+
+Route::group(['prefix' => 'blog'], function(){
+    Route::get('/category', [PostApiController::class, 'category']); 
+    Route::post('/post_category', [PostApiController::class, 'createPostCategory']); 
+    Route::post('/create_post', [PostApiController::class, 'createPost']);
 });
 
 // Private admin & users routes

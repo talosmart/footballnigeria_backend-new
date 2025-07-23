@@ -20,6 +20,9 @@ return new class extends Migration
             $table->longText('content');
             $table->string('featured_image')->nullable();
             $table->boolean('is_published')->default(false);
+            $table->foreignId('category_id')->constrained('fn_categories')->cascadeOnDelete();
+            $table->foreignId('author_id')->constrained('users');
+            $table->boolean('is_featured_video')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
@@ -55,6 +58,8 @@ return new class extends Migration
             $table->string('twitter_image')->nullable();
             $table->string('canonical_url')->nullable();
             $table->json('structured_data')->nullable();
+            $table->integer('seoable_id')->nullable();
+            $table->string('seoable_type')->nullable();
             $table->timestamps();
         });
     }

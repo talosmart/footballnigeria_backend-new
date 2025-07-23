@@ -16,13 +16,11 @@ class Post extends Model
         'excerpt',
         'content',
         'category_id',
-        'user_id',
+        'author_id',
         'featured_image',
         'is_published',
         'published_at',
-        'category_id',
         'is_featured_video',
-  
     ];
 
     protected $casts = [
@@ -36,12 +34,12 @@ class Post extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function author(): BelongsTo
+    public function author()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function seo(): MorphOne
+    public function seo()
     {
         return $this->morphOne(SeoData::class, 'seoable');
     }

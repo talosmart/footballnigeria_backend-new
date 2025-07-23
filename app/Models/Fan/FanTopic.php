@@ -3,6 +3,8 @@
 namespace App\Models\Fan;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
+use App\Models\User;
 
 class FanTopic extends Model
 {
@@ -21,7 +23,7 @@ class FanTopic extends Model
         'user_id'
     ];
     
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(Category::class);
     }
@@ -31,6 +33,6 @@ class FanTopic extends Model
         return $this->hasMany(FanPost::class);
     }
     public function user(){
-        return $this->hasOne(FanUser::class,'id','user_id');
+        return $this->hasOne(User::class,'id','user_id');
     }
 }

@@ -16,6 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('icon')->nullable();
+            $table->string('meta_keywords')->nullable();
+            $table->string('meta_description')->nullable();
+            $table->string('head1')->nullable();
+            $table->string('head2')->nullable();
+            $table->string('summary')->nullable();
+            $table->string('content')->nullable();
             $table->timestamps();
         });
 
@@ -24,6 +30,12 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('fan_categories');
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('meta_keywords')->nullable();
+            $table->string('meta_description')->nullable();
+            $table->string('summary')->nullable();
+            $table->boolean('is_approved')->default(false);
+            $table->string('content')->nullable();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
         
