@@ -11,6 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Create categories table
+        Schema::create('fn_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+        
         // Create posts table
         Schema::create('fn_posts', function (Blueprint $table) {
             $table->id();
@@ -24,15 +33,6 @@ return new class extends Migration
             $table->foreignId('author_id')->constrained('users');
             $table->boolean('is_featured_video')->default(false);
             $table->timestamp('published_at')->nullable();
-            $table->timestamps();
-        });
-
-        // Create categories table
-        Schema::create('fn_categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
             $table->timestamps();
         });
 
