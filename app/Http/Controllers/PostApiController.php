@@ -36,6 +36,7 @@ class PostApiController extends Controller
                 'slug' => 'required|string|max:255|unique:fan_categories,slug',
                 'icon' => 'nullable|string|max:255',
                 'meta_keywords' => 'nullable|string|max:500',
+                'description' => 'required|string|max:255',
                 'meta_description' => 'nullable|string|max:500',
                 'head1' => 'nullable|string|max:255',
                 'head2' => 'nullable|string|max:255',
