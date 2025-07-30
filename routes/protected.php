@@ -9,6 +9,7 @@ use App\Http\Controllers\Fan\FanCommentController;
 use App\Http\Controllers\Fan\FanReactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostApiController;
+use App\Http\Controllers\PollController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // Resend verification
@@ -39,6 +40,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::group(['prefix' => 'fans'], function () {
+    Route::group(['prefix' => 'poll'], function () {
+        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
+            Route::post('/create', [PollController::class, 'createPoll']);
+            Route::get('/get', [PollController::class, 'getPoll']);
+            Route::put('/update/{id}', [PollController::class, 'updatePoll']);
+            Route::delete('/delete/{id}', [PollController::class, 'deletePoll']);
+            Route::post('/cast', [PollController::class, 'pollCaster']);
+        });
+    });
     Route::group(['prefix' => 'topics'], function () {
         Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
             Route::post('/create', [FanPostController::class, 'createTopic']);
