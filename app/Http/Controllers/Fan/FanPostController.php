@@ -19,6 +19,7 @@ class FanPostController extends Controller
         try{
             $request->validate([
                 'topic_id' => 'nullable',
+                'title' => 'required|string',
                 'content' => 'required|string|max:20000',
                 'media' => 'nullable|array',
                 'media.*' => 'file',

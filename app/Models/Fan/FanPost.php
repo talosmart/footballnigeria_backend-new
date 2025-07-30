@@ -13,7 +13,8 @@ class FanPost extends Model
     protected $table = 'fan_posts';
     protected $fillable = [
         'id', 
-        'user_id', 
+        'user_id',
+        'title', 
         'topic_id', 
         'content', 
         'status', 

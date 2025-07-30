@@ -43,6 +43,7 @@ return new class extends Migration
         Schema::create('fan_posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('title');
             $table->text('content');
             $table->unsignedInteger('like_count')->default(0);
             $table->unsignedInteger('comment_count')->default(0);
