@@ -9,7 +9,8 @@ use App\Http\Controllers\Fan\FanCommentController;
 use App\Http\Controllers\Fan\FanReactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostApiController;
-use App\Http\Controllers\PollController;
+use App\Http\Controllers\PollController; 
+use App\Http\Controllers\TagController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // Resend verification
@@ -85,9 +86,16 @@ Route::group(['prefix' => 'fans'], function () {
 });
 
 Route::group(['prefix' => 'blog'], function(){
-    Route::get('/category', [PostApiController::class, 'category']); 
-    Route::post('/post_category', [PostApiController::class, 'createPostCategory']); 
-    Route::post('/create_post', [PostApiController::class, 'createPost']);
+    Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+        Route::get('/category', [PostApiController::class, 'category']); 
+        Route::post('/post_category', [PostApiController::class, 'createPostCategory']); 
+        Route::post('/create_post', [PostApiController::class, 'createPost']);
+
+        Route::post('/create-tag', [TagController::class, 'createTag']); 
+        Route::get('/get-tag', [TagController::class, 'getTag']); 
+        Route::put('/update-tag/{tagName}', [TagController::class, 'updateTag']);
+        Route::delete('/delete-tag/{tagName}', [TagController::class, 'deleteTag']);
+    });
 });
 
 // Private admin & users routes

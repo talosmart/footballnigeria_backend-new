@@ -23,6 +23,7 @@ class FanPostController extends Controller
                 'content' => 'required|string|max:20000',
                 'media' => 'nullable|array',
                 'media.*' => 'file',
+                'tags' => 'nullable|array'
             ]);
             $s=[
                 'user_id' => auth()->id(),
@@ -54,6 +55,8 @@ class FanPostController extends Controller
                     ]);
                 }
             }
+
+            $post->syncTags($request->tags);
 
             return response()->json([
                     'status' => 'success',

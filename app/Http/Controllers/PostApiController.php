@@ -76,7 +76,6 @@ class PostApiController extends Controller
     public function createPost(Request $request)
     {
         try{
-
             $validator = \Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'content' => 'required|string',
@@ -87,6 +86,7 @@ class PostApiController extends Controller
                 'is_featured_video' => 'nullable|boolean',
                 'is_featured' => 'nullable|boolean',
                 'is_trending' => 'nullable|boolean',
+                'tags' => 'nullable|array',
                 // SEO fields
                 'model_type' => 'nullable|string|max:255',
                 'model_id' => 'nullable|integer',
@@ -150,6 +150,8 @@ class PostApiController extends Controller
 
             $post->seo()->save($seoData);
 
+            $post->syncTags($validator['tags']);
+
             return response()->json([
                 'status' => 'success',
                 'data' => new PostResource($post),
@@ -160,7 +162,27 @@ class PostApiController extends Controller
                 'message' => 'Request failed: ' . $e->getMessage(),
             ], 500);
         }
-    }   
+    } 
+    
+    public function listPostBytag($tagName)
+    {
+        try{
+            // eg: $tagName = ['do', 'we', 'now']
+
+            $post = Post::with(['author','seo'])->withAnyTags([$tagName])->get();
+
+            return response()->json([
+                'status' => 'error',
+                'data' => new PostResource($posts) 
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Request failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function listPost(Request $request)
     {

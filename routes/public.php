@@ -18,6 +18,7 @@ Route::get('/categories',[PostApiController::class,'category']);
 Route::group(['prefix' => 'blog'], function(){
     Route::get('list', [PostApiController::class,'listPost']);
     Route::get('single/{id}', [PostApiController::class,'singlePost']);
+    Route::get('list-by-tag/{id}', [PostApiController::class,'listPostBytag']);
 });
 
 require __DIR__.'/thirdPartyApi.php';

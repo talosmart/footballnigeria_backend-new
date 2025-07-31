@@ -5,10 +5,11 @@ namespace App\Models\Fan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
+use Spatie\Tags\HasTags;
 
 class FanPost extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasTags;
 
     protected $table = 'fan_posts';
     protected $fillable = [
