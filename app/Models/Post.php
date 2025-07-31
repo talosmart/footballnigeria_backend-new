@@ -21,6 +21,8 @@ class Post extends Model
         'is_published',
         'published_at',
         'is_featured_video',
+        'is_featured',
+        'is_trending'
     ];
 
     protected $casts = [

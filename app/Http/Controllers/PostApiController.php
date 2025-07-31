@@ -85,6 +85,8 @@ class PostApiController extends Controller
                 'featured_image' => 'nullable|file',
                 'published_at' => 'nullable|date',
                 'is_featured_video' => 'nullable|boolean',
+                'is_featured' => 'nullable|boolean',
+                'is_trending' => 'nullable|boolean',
                 // SEO fields
                 'model_type' => 'nullable|string|max:255',
                 'model_id' => 'nullable|integer',
@@ -115,6 +117,8 @@ class PostApiController extends Controller
                 'title' => $request->title,
                 'content' => $request->content,
                 'category_id' => $request->category_id,
+                'is_featured' => $request->is_featured,
+                'is_trending' => $request->is_trending,
                 'slug' => $this->generateUniqueSlug($request->title),
                 'excerpt' => $request->excerpt,
                 'featured_image' => $file['filePath'],

@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('excerpt')->nullable();
             $table->longText('content');
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_trending')->default(false);
             $table->string('featured_image')->nullable();
             $table->boolean('is_published')->default(false);
             $table->foreignId('category_id')->constrained('fan_categories')->cascadeOnDelete();
