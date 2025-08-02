@@ -11,9 +11,7 @@ class TagController extends Controller
         try{
             $data = $request->all();
 
-            //eg: $data = ['name', 'play', 'dance']
-
-            foreach($data as $tagName){
+            foreach($data['name'] as $tagName){
                 Tag::findOrCreateFromString($tagName);
             }
 

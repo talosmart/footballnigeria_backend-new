@@ -150,7 +150,9 @@ class PostApiController extends Controller
 
             $post->seo()->save($seoData);
 
-            $post->syncTags($validator['tags']);
+            $tags = $request->tags;
+
+            $post->attachTags($tags);
 
             return response()->json([
                 'status' => 'success',
@@ -164,16 +166,16 @@ class PostApiController extends Controller
         }
     } 
     
-    public function listPostBytag($tagName)
+    public function listPostBytag($tag)
     {
         try{
-            // eg: $tagName = ['do', 'we', 'now']
+            $tags = explode(',', urldecode($tag));
 
-            $post = Post::with(['author','seo'])->withAnyTags([$tagName])->get();
+            $posts = Post::with(['author','seo'])->withAnyTags($tags)->get();
 
             return response()->json([
-                'status' => 'error',
-                'data' => new PostResource($posts) 
+                'status' => 'success',
+                'data' => PostResource::collection($posts)
             ]);
 
         } catch (Exception $e) {
