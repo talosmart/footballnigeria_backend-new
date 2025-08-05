@@ -81,7 +81,7 @@ class PostApiController extends Controller
                 'content' => 'required|string',
                 'category_id' => 'required|exists:fan_categories,id',
                 'excerpt' => 'nullable|string',
-                'featured_image' => 'nullable|file',
+                'featured_image' => 'required|file',
                 'published_at' => 'nullable|date',
                 'is_featured_video' => 'nullable|boolean',
                 'is_featured' => 'nullable|boolean',

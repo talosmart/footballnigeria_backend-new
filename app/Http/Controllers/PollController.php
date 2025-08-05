@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Polls\Poll;
+use App\Models\Polls\Votee;
 use App\Models\Polls\Voter;
 
 class PollController extends Controller
@@ -12,19 +13,21 @@ class PollController extends Controller
         try{
             $validate = $request->validate([
                 'question' => 'required|string',
-                'sub_question' => 'required|string'
+                'votees' => "required|array"
             ]);
 
             $poll = Poll::create([
-                'question' => $validate['question'],
-                'sub_question' => $validate['sub_question']
+                'question' => $validate['question']
             ]);
-
-            if(!$poll){
-                return response()->json(['message' => "unable to create poll"]);
+ 
+            foreach($validate['votees'] as $votee){
+                $votees = Votee::create([
+                    'poll_id' => $poll->id,
+                    'name' =>  $votee['name']
+                ]);
             }
 
-            response()->json([
+            return response()->json([
                 'message' => "successfully create poll",
                 'data' => $poll
             ]);
@@ -38,9 +41,9 @@ class PollController extends Controller
 
     public function getPoll(Request $request){
         try{
-            $poll = Poll::with(['votes.voter'])->all();
+            $poll = Poll::with(['votes.voter.user'])->get();
 
-            response()->json([
+            return response()->json([
                 'status' => "success",
                 'data' => $poll
             ]);
@@ -52,27 +55,37 @@ class PollController extends Controller
         }
     }
 
-    public function updatePoll(Request $request, $id){
+    public function updatePoll(Request $request){
         try{
             $validate = $request->validate([
+                'id' => 'required|integer',
                 'question' => 'required|string',
-                'sub_question' => 'required|string'
+                'votees' => 'required|array'
             ]);
 
-            $poll = Poll::findOrFail($id);
+            $poll = Poll::findOrFail($validate['id']);
 
             $res = $poll->update([
-                'question' => $validate['question'],
-                'sub_question' => $validate['sub_question']
+                'question' => $validate['question']
             ]);
+
+            foreach($validate['votees'] as $votee){
+                $votees = Votee::where([['poll_id',  $validate['id']], ['id', $votee['id']]])->first();
+
+                if($votees){
+                    $votees->update([
+                        'name' =>  $votee['name']
+                    ]);
+                }
+            }
+
 
             if(!$res){
                 return response()->json(['message' => "unable to update poll"]);
             }
 
-            response()->json([
-                'message' => "successfully update poll",
-                'data' => $res
+            return response()->json([
+                'message' => "successfully update poll"
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -92,7 +105,7 @@ class PollController extends Controller
 
             $poll->delete();
 
-            response()->json([
+            return response()->json([
                 'message' => "successfully delete poll"
             ]);
         } catch (Exception $e) {
@@ -103,23 +116,24 @@ class PollController extends Controller
         }
     }
 
-    public function pollCaster(Request $request, $id){
+    public function pollCaster(Request $request){
         try{
             $validate = $request->validate([
+                'id' => 'required|integer',
                 'vote' => 'required|boolean'
             ]);
 
-            $poll = Poll::findOrFail($id);
+            $votee = Votee::findOrFail($validate['id']);
 
-            if(!$poll){
+            if(!$votee){
                 return response()->json(['message' => "poll not found"]);
             }
 
-            $vote = Voter::where([['poll_id', $id], ['voter_id', auth()->user()->id]])->first();
+            $vote = Voter::where([['votee_id', $validate['id']], ['voter_id', auth()->user()->id]])->first();
 
             if(!$vote){
                 $cast = Voter::create([
-                    'poll_id' => $id,
+                    'votee_id' => $validate['id'],
                     'voter_id' => auth()->user()->id,
                     'vote_type' => $validate['vote']
                 ]);
@@ -129,17 +143,17 @@ class PollController extends Controller
                 }
 
                 if($validate['vote']){
-                    $poll->update([
-                        'total_positive_vote_count' => $poll->total_positive_vote_count + 1
+                    $votee->update([
+                        'total_positive_vote_count' => $votee->total_positive_vote_count + 1
                     ]);
                 } else {
-                    $poll->update([
-                        'total_negative_vote_count' => $poll->total_negative_vote_count + 1
+                    $votee->update([
+                        'total_negative_vote_count' => $votee->total_negative_vote_count + 1
                     ]);
                 }
             }
 
-            $cast = $vote::update([
+            $cast = $vote->update([
                 'vote_type' => $validate['vote']
             ]);
 
@@ -147,23 +161,21 @@ class PollController extends Controller
                 return response()->json(['message' => "vote not casted"]);
             }
 
-            if($vote->vote_type && ($validate['vote'] == false)){
-                $poll->update([
-                    'total_positive_vote_count' => $poll->total_positive_vote_count - 1,
-                    'total_negative_vote_count' => $poll->total_negative_vote_count + 1
+            if($validate['vote'] == false){
+                $votee->update([
+                    'total_positive_vote_count' => $votee->total_positive_vote_count - 1,
+                    'total_negative_vote_count' => $votee->total_negative_vote_count + 1
+                ]);
+            }else{
+                $votee->update([
+                    'total_positive_vote_count' => $votee->total_positive_vote_count + 1,
+                    'total_negative_vote_count' => $votee->total_negative_vote_count - 1
                 ]);
             }
 
-            if(($vote->vote_type == false) && ($validate['vote'] == true)){
-                $poll->update([
-                    'total_positive_vote_count' => $poll->total_positive_vote_count + 1,
-                    'total_negative_vote_count' => $poll->total_negative_vote_count - 1
-                ]);
-            }
-
-            response()->json([
+            return response()->json([
                 'message' => "vote casted successfully",
-                'poll' => $this.get_poll()
+                'poll' => $this->getPoll($request)
             ]);
         } catch (Exception $e) {
             return response()->json([

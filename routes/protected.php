@@ -41,15 +41,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::group(['prefix' => 'fans'], function () {
-    Route::group(['prefix' => 'poll'], function () {
-        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
-            Route::post('/create', [PollController::class, 'createPoll']);
-            Route::get('/get', [PollController::class, 'getPoll']);
-            Route::put('/update/{id}', [PollController::class, 'updatePoll']);
-            Route::delete('/delete/{id}', [PollController::class, 'deletePoll']);
-            Route::post('/cast', [PollController::class, 'pollCaster']);
-        });
-    });
     Route::group(['prefix' => 'topics'], function () {
         Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
             Route::post('/create', [FanPostController::class, 'createTopic']);
@@ -58,6 +49,7 @@ Route::group(['prefix' => 'fans'], function () {
             Route::get('/list/{status?}/{ownership?}', [FanPostController::class, 'ListTopic']);
         });
     });
+
     Route::group(['prefix' => 'post'], function () {
         Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {    
             Route::get('/categories', [FanPostController::class, 'postcategories']);
@@ -95,6 +87,19 @@ Route::group(['prefix' => 'blog'], function(){
         Route::get('/get-tag', [TagController::class, 'getTag']); 
         Route::put('/update-tag/{tagName}', [TagController::class, 'updateTag']);
         Route::delete('/delete-tag/{tagName}', [TagController::class, 'deleteTag']);
+    });
+});
+
+Route::group(['prefix' => 'poll'], function(){
+    Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+        Route::post('/create-poll', [PollController::class, 'createPoll']);
+        Route::get('/get-poll', [PollController::class, 'getPoll']);
+        Route::put('/update-poll', [PollController::class, 'updatePoll']);
+        Route::delete('/delete-poll/{id}', [PollController::class, 'deletePoll']);
+    });
+
+    Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
+        Route::post('/cast-vote', [PollController::class, 'pollCaster']);
     });
 });
 

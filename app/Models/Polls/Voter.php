@@ -9,13 +9,13 @@ class Voter extends Model
 {
     protected $fillable = [
         'id',
-        'poll_id',
+        'votee_id',
         'voter_id',
         'vote_type'
     ];
 
-    public function voter()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'voter_id', 'id');
     }
 }

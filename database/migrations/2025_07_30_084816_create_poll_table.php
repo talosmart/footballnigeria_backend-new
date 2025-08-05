@@ -14,7 +14,14 @@ return new class extends Migration
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
             $table->string('question');
-            $table->string('sub_question');
+            $table->string('sub_question')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('votees', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('poll_id')->constrained('polls');
+            $table->string('name');
             $table->integer('total_positive_vote_count')->nullable();
             $table->integer('total_negative_vote_count')->nullable();
             $table->timestamps();
@@ -22,7 +29,7 @@ return new class extends Migration
 
         Schema::create('voters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('poll_id')->constrained('polls');
+            $table->foreignId('votee_id')->constrained('votees');
             $table->foreignId('voter_id')->constrained('users');
             $table->boolean('vote_type')->nullable();
             $table->timestamps();

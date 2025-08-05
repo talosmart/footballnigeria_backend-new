@@ -9,13 +9,11 @@ class Poll extends Model
     protected $fillable = [
         'id',
         'question',
-        'sub_question',
-        'total_positive_vote_count',
-        'total_negative_vote_count'
+        'sub_question'
     ];
 
     public function votes()
     {
-        return $this->hasMany(Voter::class, 'poll_id', 'id');
+        return $this->hasMany(Votee::class, 'poll_id', 'id');
     }
 }
