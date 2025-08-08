@@ -26,6 +26,8 @@ class PostResource extends JsonResource
             'featured_image_url' => $this->featured_image ? url('uploads/' . $this->featured_image) : null,
             'is_published' => $this->is_published,
             'published_at' => $this->published_at,
+            'is_featured' => $this->is_featured,
+            'is_trending' => $this->is_trending,
             'is_featured_video_url' => $this->is_featured_video ? url('uploads/' . $this->is_featured_video) : null,
             'seo' => new SeoDataResource($this->whenLoaded('seo')),
             'created_at' => $this->created_at,
