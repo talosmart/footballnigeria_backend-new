@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         // Seed Nigerian users
         $this->call([
             NigerianUsersSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }

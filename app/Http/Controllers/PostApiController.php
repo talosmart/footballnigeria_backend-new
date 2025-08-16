@@ -164,8 +164,8 @@ class PostApiController extends Controller
                 'message' => 'Request failed: ' . $e->getMessage(),
             ], 500);
         }
-    } 
-    
+    }
+
     public function listPostBytag($tag)
     {
         try{
@@ -190,13 +190,13 @@ class PostApiController extends Controller
     {
         try{
             $query = Post::query()->with(['author','seo']);
-        
+
             if ($request->filled('category_id')) {
                 $query->whereHas('category', function ($q) use ($request) {
                     $q->where('id', $request->category_id);
                 });
             }
-    
+
             if ($request->filled('search')) {
                 $query->where(function ($q) use ($request) {
                     $q->where('title', 'like', '%' . $request->search . '%')
@@ -204,12 +204,22 @@ class PostApiController extends Controller
                     ->orWhere('content', 'like', '%' . $request->search . '%');
                 });
             }
-        
-            $posts = $query->latest('created_at')->paginate(request()->paginate); 
+
+            // Add filter for is_featured
+            if ($request->filled('is_featured')) {
+                $query->where('is_featured', (bool)$request->is_featured);
+            }
+
+            // Add filter for is_trending
+            if ($request->filled('is_trending')) {
+                $query->where('is_trending', (bool)$request->is_trending);
+            }
+
+            $posts = $query->latest('created_at')->paginate(request()->paginate);
 
             return response()->json([
                 'status' => 'success',
-                'data' => PostResource::collection( $posts->items()), // The posts data
+                'data' => PostResource::collection($posts->items()), // The posts data
                 'meta' => [
                     'current_page' => $posts->currentPage(),
                     'per_page' => $posts->perPage(),
@@ -239,7 +249,7 @@ class PostApiController extends Controller
                     'errors' => $validator->errors(),
                 ]);
             }
-            
+
             $check = Post::find($id);
             if (!$check) {
                 return response()->json([
@@ -249,10 +259,10 @@ class PostApiController extends Controller
             }
 
             $posts = Post::query()->with(['author','seo'])->find($id);
-            
+
             return response()->json([
                 'status' => 'error',
-                'data' => new PostResource( $posts), 
+                'data' => new PostResource( $posts),
             ]);
         } catch (Exception $e) {
             return response()->json([
