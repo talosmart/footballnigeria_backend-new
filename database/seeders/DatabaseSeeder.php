@@ -23,5 +23,10 @@ class DatabaseSeeder extends Seeder
             "role" => "admin",
             "password" => "Talosmart@1234",
         ]);
+
+        // Seed Nigerian users
+        $this->call([
+            NigerianUsersSeeder::class,
+        ]);
     }
 }

@@ -9,7 +9,9 @@ use App\Http\Controllers\Fan\FanCommentController;
 use App\Http\Controllers\Fan\FanReactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostApiController;
-use App\Http\Controllers\PollController; 
+use App\Http\Controllers\PollController;
+use App\Http\Controllers\PredictionController;
+// use App\Http\Controllers\TipController; // Commented out to avoid loading issues
 use App\Http\Controllers\TagController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -51,7 +53,7 @@ Route::group(['prefix' => 'fans'], function () {
     });
 
     Route::group(['prefix' => 'post'], function () {
-        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {    
+        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
             Route::get('/categories', [FanPostController::class, 'postcategories']);
             Route::post('/create', [FanPostController::class,'createPost']);
             Route::post('/update/{id}',[FanPostController::class,'updatePost']);
@@ -67,39 +69,169 @@ Route::group(['prefix' => 'fans'], function () {
             Route::post('/{comment_id}/comment/react',[FanReactionController::class,'reactToComment']);
         });
 
-        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {     
+        Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
             Route::post('/{comment_id}/reply',[FanCommentController::class,'addCommentReply']);
             Route::post('/{reply_id}/update/reply',[FanCommentController::class,'updateReply']);
             Route::get('/{reply_id}/get/reply',[FanCommentController::class,'getReply']);
             Route::get('/{reply_id}/delete/reply',[FanCommentController::class,'deleteReply']);
-            Route::post('/{reply_id}/reply/react',[FanReactionController::class,'reactToReply']); 
+            Route::post('/{reply_id}/reply/react',[FanReactionController::class,'reactToReply']);
         });
     });
 });
 
 Route::group(['prefix' => 'blog'], function(){
     Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
-        Route::get('/category', [PostApiController::class, 'category']); 
-        Route::post('/post_category', [PostApiController::class, 'createPostCategory']); 
+        Route::get('/category', [PostApiController::class, 'category']);
+        Route::post('/post_category', [PostApiController::class, 'createPostCategory']);
         Route::post('/create_post', [PostApiController::class, 'createPost']);
 
-        Route::post('/create-tag', [TagController::class, 'createTag']); 
-        Route::get('/get-tag', [TagController::class, 'getTag']); 
+        Route::post('/create-tag', [TagController::class, 'createTag']);
+        Route::get('/get-tag', [TagController::class, 'getTag']);
         Route::put('/update-tag/{tagName}', [TagController::class, 'updateTag']);
         Route::delete('/delete-tag/{tagName}', [TagController::class, 'deleteTag']);
     });
 });
 
-Route::group(['prefix' => 'poll'], function(){
+Route::group(['prefix' => 'polls'], function(){
+    // Admin routes for managing polls
     Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
-        Route::post('/create-poll', [PollController::class, 'createPoll']);
-        Route::get('/get-poll', [PollController::class, 'getPoll']);
-        Route::put('/update-poll', [PollController::class, 'updatePoll']);
-        Route::delete('/delete-poll/{id}', [PollController::class, 'deletePoll']);
+        Route::post('/create', [PollController::class, 'createPoll']);
+        Route::put('/update', [PollController::class, 'updatePoll']);
+        Route::delete('/{id}', [PollController::class, 'deletePoll']);
+        Route::get('/{id}/stats', [PollController::class, 'getPollStats']);
     });
 
-    Route::group(['middleware' => ['auth:sanctum', 'role:user', 'verified']], function () {
-        Route::post('/cast-vote', [PollController::class, 'pollCaster']);
+    // User routes for voting and viewing polls
+    Route::group(['middleware' => ['auth:sanctum', 'role:user,admin', 'verified']], function () {
+        Route::post('/vote', [PollController::class, 'castVote']);
+    });
+
+    // Public routes for viewing polls
+    Route::get('/', [PollController::class, 'getPolls']);
+    Route::get('/league', [PollController::class, 'getLeaguePolls']);
+    Route::get('/national', [PollController::class, 'getNationalPolls']);
+    Route::get('/with-tips', [PollController::class, 'getPolls']); // Filter polls that have tips
+    Route::get('/{id}', [PollController::class, 'getPoll']);
+});
+
+// Predictions routes
+Route::group(['prefix' => 'predictions'], function(){
+    // Admin routes for managing predictions
+    Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+        Route::post('/create', [PredictionController::class, 'createPrediction']);
+        Route::post('/resolve', [PredictionController::class, 'resolvePrediction']);
+    });
+
+    // User routes for making predictions
+    Route::group(['middleware' => ['auth:sanctum', 'role:user,admin', 'verified']], function () {
+        Route::post('/submit', [PredictionController::class, 'submitPrediction']);
+    });
+
+    // Public routes for viewing predictions
+    Route::get('/', [PredictionController::class, 'getPredictions']);
+    Route::get('/{id}', [PredictionController::class, 'getPrediction']);
+    Route::get('/leaderboard', [PredictionController::class, 'getLeaderboard']);
+});
+
+// Simple test route for debugging tips for poll 1
+Route::get('test/tips/poll1', function () {
+    $poll = App\Models\Polls\Poll::find(1);
+    $tips = App\Models\Polls\Tip::where('poll_id', 1)->get();
+
+    return response()->json([
+        'status' => 'success',
+        'poll_found' => $poll ? true : false,
+        'poll_title' => $poll ? $poll->title : null,
+        'tips_count' => $tips->count(),
+        'tips' => $tips->map(function($tip) {
+            return [
+                'id' => $tip->id,
+                'title' => $tip->title,
+                'tip_type' => $tip->tip_type,
+                'reliability_score' => $tip->reliability_score
+            ];
+        })
+    ]);
+});
+
+// Simple test route for debugging
+Route::get('test/tips', function () {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Tips route is working',
+        'data' => [
+            'poll_count' => App\Models\Polls\Poll::count(),
+            'tip_count' => App\Models\Polls\Tip::count()
+        ]
+    ]);
+});
+
+// Poll-specific tips routes using closures (working solution)
+Route::get('polls/{poll_id}/tips', function ($poll_id) {
+    try {
+        $poll = App\Models\Polls\Poll::find($poll_id);
+
+        if (!$poll) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Poll not found'
+            ], 404);
+        }
+
+        $tips = App\Models\Polls\Tip::where('poll_id', $poll_id)
+            ->where('is_active', true)
+            ->with('creator')
+            ->orderByDesc('reliability_score')
+            ->orderByDesc('is_featured')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'poll' => [
+                    'id' => $poll->id,
+                    'title' => $poll->title,
+                    'type' => $poll->type
+                ],
+                'tips' => $tips->map(function ($tip) {
+                    return [
+                        'id' => $tip->id,
+                        'title' => $tip->title,
+                        'description' => $tip->description,
+                        'tip_type' => $tip->tip_type,
+                        'tip_category' => $tip->tip_category,
+                        'reliability_score' => $tip->reliability_score,
+                        'is_featured' => $tip->is_featured,
+                        'admin' => $tip->creator ? [
+                            'id' => $tip->creator->id,
+                            'name' => $tip->creator->name,
+                        ] : null,
+                        'created_at' => $tip->created_at->format('Y-m-d H:i:s')
+                    ];
+                })
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Internal server error: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
+// Direct test of the poll tips endpoint without controller
+Route::get('polls/{poll_id}/tips/test', function ($poll_id) {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Direct route test works',
+        'poll_id' => $poll_id
+    ]);
+});// General tips management routes (Admin only)
+Route::group(['prefix' => 'tips'], function(){
+    Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+        Route::get('/', 'App\Http\Controllers\TipController@getAllTips');
+        Route::put('/{id}', 'App\Http\Controllers\TipController@updateTip');
+        Route::delete('/{id}', 'App\Http\Controllers\TipController@deleteTip');
     });
 });
 
@@ -110,8 +242,8 @@ Route::group(['prefix' => 'auth'], function(){
         Route::put('/profile', [UserController::class, 'updateProfile']);
         Route::post('/profile/picture', [UserController::class, 'updateProfilePicture']);
         Route::delete('/account', [UserController::class, 'deleteAccount']);
-        
-        Route::post('/refresh', [AuthController::class, 'refresh']); 
-        Route::post('/logout', [AuthController::class, 'logout']); 
+
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::post('/logout', [AuthController::class, 'logout']);
     });
 });
